@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Special Greeting for My Friends</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        /* CSS will go here */
+        :root {
+            --color-off-white: #F8F8F8;
+            --color-warm-cream: #FDF9F3;
+            --color-soft-beige: #EAE0D5;
+            --color-light-peach: #F9DCC4;
+            --color-muted-lavender: #D3CEE6;
+            --color-sky-blue-accent: #AEC6CF;
+            --color-sage-green: #C1CDC1;
+            --color-text-dark: #333333;
+            --color-text-light: #555555;
+            --color-overlay: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--color-warm-cream);
+            color: var(--color-text-dark);
+            line-height: 1.6;
+            overflow: hidden; /* Prevent scrollbars during transitions */
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .loader {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--color-warm-cream);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2em;
+            color: var(--color-text-dark);
+            z-index: 1000;
+            transition: opacity 0.8s ease-out;
+            opacity: 1;
+        }
+
+        .loader.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px;
+            font-family: 'Playfair Display', serif;
+            color: var(--color-text-dark);
+            z-index: 10;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin: 0;
+            color: var(--color-text-dark);
+        }
+
+        main {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-container {
+            position: relative;
+            width: 90%;
+            max-width: 900px;
+            height: 70vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1000px;
+        }
+
+        .friend-card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.6));
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+            color: var(--color-text-dark);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-sizing: border-box;
+        }
+
+        .friend-card.active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            z-index: 5;
+        }
+
+        .friend-card h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3em;
+            margin-bottom: 20px;
+            color: var(--color-sky-blue-accent);
+        }
+
+        .friend-card p {
+            font-size: 1.3em;
+            max-width: 700px;
+            color: var(--color-text-light);
+        }
+
+        .decorative-element {
+            margin-top: 20px;
+            font-size: 3em;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) 0.4s;
+        }
+
+        .friend-card.active .decorative-element {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .navigation-controls {
+            position: absolute;
+            bottom: 30px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            z-index: 10;
+        }
+
+        .nav-button {
+            background-color: var(--color-sky-blue-accent);
+            color: var(--color-warm-cream);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-button:hover {
+            background-color: #8bb7c4; /* Slightly darker sky blue */
+            transform: translateY(-3px);
+        }
+
+        .progress-indicator {
+            position: absolute;
+            top: 20px;
+            width: 80%;
+            max-width: 600px;
+            height: 8px;
+            background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 5px;
+            overflow: hidden;
+            z-index: 10;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--color-light-peach), var(--color-muted-lavender));
+            border-radius: 5px;
+            transition: width 0.5s ease-out;
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px;
+            font-size: 0.9em;
+            color: var(--color-text-light);
+            background-color: var(--color-off-white);
+            z-index: 10;
+        }
+
+        /* Floating Particles */
+        .particles-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            animation: float 15s infinite ease-in-out;
+            opacity: 0.7;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) translateX(0); opacity: 0.7; }
+            50% { transform: translateY(-20px) translateX(20px); opacity: 0.9; }
+            100% { transform: translateY(0) translateX(0); opacity: 0.7; }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .friend-card {
+                padding: 20px;
+                height: 80vh;
+            }
+
+            .friend-card h2 {
+                font-size: 2em;
+            }
+
+            .friend-card p {
+                font-size: 1em;
+            }
+
+            .decorative-element {
+                font-size: 2em;
+            }
+
+            .nav-button {
+                padding: 10px 20px;
+                font-size: 0.9em;
+            }
+
+            .progress-indicator {
+                width: 90%;
+                top: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loader">Loading your friendly greetings...</div>
+
+    <header>
+        <h1>A Friendship Extravaganza!</h1>
+    </header>
+
+    <main>
+        <div class="particles-container"></div>
+        <div class="card-container">
+            <!-- Welcome Section -->
+            <section class="friend-card active" data-color="--color-light-peach">
+                <h2>Welcome, Dear Friends!</h2>
+                <p>Prepare for a heartwarming journey celebrating the wonderful bond we share.</p>
+                <span class="decorative-element">✨</span>
+            </section>
+
+            <!-- Greeting for Ushmit -->
+            <section class="friend-card" data-color="--color-muted-lavender">
+                <h2>To Ushmit, My Creative Soul</h2>
+                <p>Your unique perspective and boundless creativity always inspire me. Life's definitely brighter with you around!</p>
+                <span class="decorative-element">🎨</span>
+            </section>
+
+            <!-- Greeting for Rik -->
+            <section class="friend-card" data-color="--color-sky-blue-accent">
+                <h2>For Rik, My Steadfast Companion</h2>
+                <p>Through thick and thin, your unwavering support and quiet strength have always been a beacon. Truly grateful for your presence.</p>
+                <span class="decorative-element">🌟</span>
+            </section>
+
+            <!-- Greeting for Sofi -->
+            <section class="friend-card" data-color="--color-sage-green">
+                <h2>To Sofi, My Ray of Sunshine</h2>
+                <p>Your infectious laughter and adventurous spirit bring so much joy into my life. Every moment with you is a delightful exploration.</p>
+                <span class="decorative-element">☀️</span>
+            </section>
+
+            <!-- Final Friendship Section -->
+            <section class="friend-card" data-color="--color-light-peach">
+                <h2>The Unbreakable Bond</h2>
+                <p>Different personalities, different journeys, one amazing friendship. Here's to many more cherished memories!</p>
+                <span class="decorative-element">💖</span>
+            </section>
+        </div>
+
+        <div class="navigation-controls">
+            <button class="nav-button" id="prevBtn">Previous</button>
+            <button class="nav-button" id="nextBtn">Next</button>
+        </div>
+
+        <div class="progress-indicator">
+            <div class="progress-bar"></div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 A GREETING WEBSITE TEST BY KIRO</p>
+    </footer>
+
+    <script>
+        // JavaScript will go here
+        document.addEventListener('DOMContentLoaded', () => {
+            const loader = document.querySelector('.loader');
+            const sections = document.querySelectorAll('.friend-card');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const progressBar = document.querySelector('.progress-bar');
+            const particlesContainer = document.querySelector('.particles-container');
+
+            let currentIndex = 0;
+            let autoTransitionInterval;
+            const autoTransitionDelay = 7000; // 7 seconds
+
+            // Function to generate random particles
+            function createParticle() {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                particlesContainer.appendChild(particle);
+
+                const size = Math.random() * 10 + 5 + 'px'; // Size between 5px and 15px
+                particle.style.width = size;
+                particle.style.height = size;
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDuration = Math.random() * 10 + 10 + 's'; // Duration between 10s and 20s
+                particle.style.animationDelay = Math.random() * 5 + 's'; // Delay up to 5s
+            }
+
+            // Create a few particles
+            for (let i = 0; i < 30; i++) {
+                createParticle();
+            }
+
+            function updateActiveSection() {
+                sections.forEach((section, index) => {
+                    section.classList.remove('active');
+                    if (index === currentIndex) {
+                        section.classList.add('active');
+                        // Update body background based on section's data-color
+                        const cardColorVar = section.dataset.color;
+                        if (cardColorVar) {
+                            document.body.style.backgroundColor = `var(${cardColorVar})`;
+                        }
+                    }
+                });
+                updateProgressBar();
+                resetAutoTransition();
+            }
+
+            function updateProgressBar() {
+                const progress = (currentIndex + 1) / sections.length * 100;
+                progressBar.style.width = `${progress}%`;
+            }
+
+            function showNextSection() {
+                currentIndex = (currentIndex + 1) % sections.length;
+                updateActiveSection();
+            }
+
+            function showPrevSection() {
+                currentIndex = (currentIndex - 1 + sections.length) % sections.length;
+                updateActiveSection();
+            }
+
+            function startAutoTransition() {
+                autoTransitionInterval = setInterval(showNextSection, autoTransitionDelay);
+            }
+
+            function resetAutoTransition() {
+                clearInterval(autoTransitionInterval);
+                startAutoTransition();
+            }
+
+            // Event Listeners for Navigation Buttons
+            nextBtn.addEventListener('click', showNextSection);
+            prevBtn.addEventListener('click', showPrevSection);
+
+            // Keyboard Navigation
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight') {
+                    showNextSection();
+                } else if (e.key === 'ArrowLeft') {
+                    showPrevSection();
+                }
+            });
+
+            // Initial load
+            updateActiveSection();
+            startAutoTransition(); // Start automatic transition on load
+
+            // Hide loader after everything is loaded and animations begin
+            window.addEventListener('load', () => {
+                setTimeout(() => {
+                    loader.classList.add('hidden');
+                }, 1000); // Give a little time for initial animations
+            });
+        });
+    </script>
+</body>
+</html>
