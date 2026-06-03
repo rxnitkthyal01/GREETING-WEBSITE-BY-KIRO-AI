@@ -135,8 +135,8 @@ No installation or build process required.
 
 Friendship is not measured by how often people meet, but by the impact they leave on each other's lives.
 
-This project is a small digital tribute to friendship, appreciation, and unforgettable memories.
+This project is a small digital tribute to friendship, appreciation, and unforgettable bond
 
 ---
 
-Made with ☕, creativity, and friendship.
+Made by kiro ai ~ rmsys
