@@ -103,7 +103,7 @@ Friendship-Website/
 ### Clone Repository
 
 ```bash
-
+https://github.com/rxnitkthyal01/GREETING-WEBSITE-BY-KIRO-AI.git
 ```
 
 ### Open Project
